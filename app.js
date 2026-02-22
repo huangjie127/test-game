@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function initializeExperiment() {
     // Check if user has already completed the experiment
     if (localStorage.getItem(CONFIG.STORAGE_KEY)) {
-        alert('您已经完成过本实验，感谢参与！');
+        showNotification('您已经完成过本实验，感谢参与！', 'info');
         return;
     }
     
@@ -298,7 +298,7 @@ async function submitDecision() {
     // Determine if followed AI recommendation
     const followedAI = state.groupType === 'AI' && selectedOptionId === project.aiRecommendation;
     
-    // Check for extreme event (Round 5 only, risk > 10%)
+    // Check for extreme event (Round 5 only, risk strictly greater than 10%)
     const isExtremeRound = state.currentRound === CONFIG.EXTREME_RISK_ROUND;
     const extremeEvent = isExtremeRound && selectedOption.risk > CONFIG.EXTREME_RISK_THRESHOLD;
     
@@ -481,7 +481,7 @@ async function exportToCSV() {
     allData = [...allData, ...localData];
     
     if (allData.length === 0) {
-        alert('没有可导出的数据');
+        showNotification('没有可导出的数据', 'warning');
         return;
     }
     
@@ -496,7 +496,7 @@ async function exportToCSV() {
     
     let csv = headers.join(',') + '\n';
     
-    allData.forEach((row, index) => {
+    allData.forEach((row) => {
         const values = headers.map(header => {
             let value = row[header];
             if (value === null || value === undefined) {
@@ -530,4 +530,45 @@ function generateUUID() {
         const v = c === 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
     });
+}
+
+/**
+ * Show an accessible notification instead of blocking alert
+ * @param {string} message - The message to display
+ * @param {string} type - Type of notification: 'info', 'warning', 'success', 'error'
+ */
+function showNotification(message, type = 'info') {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.setAttribute('role', 'alert');
+    notification.setAttribute('aria-live', 'polite');
+    notification.textContent = message;
+    
+    // Add styles
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 15px 30px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 500;
+        z-index: 10000;
+        animation: slideDown 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        background: ${type === 'warning' ? '#fff3cd' : type === 'error' ? '#f8d7da' : '#d4edda'};
+        color: ${type === 'warning' ? '#856404' : type === 'error' ? '#721c24' : '#155724'};
+        border: 1px solid ${type === 'warning' ? '#ffc107' : type === 'error' ? '#f5c6cb' : '#c3e6cb'};
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 4 seconds
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transition = 'opacity 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+    }, 4000);
 }

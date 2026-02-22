@@ -228,7 +228,7 @@ const PROJECTS = [
             }
         ],
         // Note: Round 5 AI recommendation is intentionally high-risk to test hypothesis
-        aiRecommendation: "C" // High benefit, high risk (>10% triggers extreme event)
+        aiRecommendation: "C" // High benefit, high risk (risk strictly >10% triggers extreme event)
     }
 ];
 
