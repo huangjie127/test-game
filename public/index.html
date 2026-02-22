@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI辅助工程建设项目审批决策模拟系统</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ================================================================
+     PAGE 1: INFORMED CONSENT
+     ================================================================ -->
+<section id="page-consent" class="page active">
+  <div class="card wide">
+    <div class="page-header">
+      <span class="badge">学术研究</span>
+      <h1>知情同意书</h1>
+    </div>
+    <div class="consent-body">
+      <p>您好！感谢您参与本次研究实验。在开始之前，请仔细阅读以下说明：</p>
+      <ul>
+        <li><strong>研究目的：</strong>本研究探讨在公共工程项目审批情境中，AI辅助建议对个体决策行为的影响。</li>
+        <li><strong>实验内容：</strong>您将扮演某市发改委工程审批委员会成员，对5个工程项目方案进行审批决策，并在实验结束后完成一份简短问卷。</li>
+        <li><strong>时间：</strong>预计需要 8–12 分钟。</li>
+        <li><strong>数据保密：</strong>所有数据匿名采集，仅用于学术研究，不涉及真实身份信息。</li>
+        <li><strong>自愿原则：</strong>您可以随时退出实验，不会受到任何影响。</li>
+        <li><strong>数据用途：</strong>数据将用于发表学术论文，不会用于商业目的。</li>
+      </ul>
+      <p class="notice">本系统为模拟研究工具，不用于真实审批场景。</p>
+    </div>
+    <div class="action-area">
+      <label class="checkbox-label">
+        <input type="checkbox" id="consent-check" />
+        <span>我已阅读并理解以上说明，自愿参与本次研究</span>
+      </label>
+      <button id="btn-consent" class="btn btn-primary" disabled>开始实验</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     PAGE 2: ROLE SETUP
+     ================================================================ -->
+<section id="page-role" class="page">
+  <div class="card">
+    <div class="page-header">
+      <span class="badge">角色设定</span>
+      <h1>您的角色</h1>
+    </div>
+    <div class="role-content">
+      <div class="role-icon">🏛️</div>
+      <h2>某市发展和改革委员会<br/>工程审批委员会委员</h2>
+      <div class="role-description">
+        <p>在接下来的实验中，您将扮演上述角色，对城市建设项目进行审批决策。</p>
+        <p>每个项目提供 <strong>4个备选方案</strong>，每个方案包含以下指标：</p>
+        <div class="metrics-grid">
+          <div class="metric-item">
+            <span class="metric-icon">💰</span>
+            <span>预算成本（万元）</span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-icon">⚠️</span>
+            <span>事故风险（%）</span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-icon">📈</span>
+            <span>经济收益指数</span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-icon">📅</span>
+            <span>预计工期（月）</span>
+          </div>
+        </div>
+        <p class="note">请根据您的判断做出审批决策。本实验共 5 轮，不提供标准答案。</p>
+      </div>
+    </div>
+    <div class="action-area">
+      <button id="btn-start-rounds" class="btn btn-primary">我已了解，开始审批</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     PAGE 3: DECISION ROUND
+     ================================================================ -->
+<section id="page-round" class="page">
+  <div class="card wide">
+    <div class="round-header">
+      <div class="round-info">
+        <span class="round-label">第 <span id="round-num">1</span> / 5 轮</span>
+        <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
+      </div>
+      <div class="timer-box">
+        <span class="timer-label">已用时</span>
+        <span id="timer-display" class="timer-value">00:00</span>
+      </div>
+    </div>
+
+    <div class="project-info">
+      <h2 id="project-title">项目名称</h2>
+      <p id="project-desc" class="project-desc">项目描述</p>
+    </div>
+
+    <!-- AI recommendation (shown only for AI group) -->
+    <div id="ai-recommendation" class="ai-box hidden">
+      <div class="ai-header">
+        <span class="ai-icon">🤖</span>
+        <span class="ai-title">智能辅助审批系统建议方案：<strong id="ai-rec-option"></strong></span>
+      </div>
+      <p class="ai-desc">基于历史相似项目收益—风险模型综合评估</p>
+    </div>
+
+    <div id="options-container" class="options-grid"></div>
+
+    <div class="action-area">
+      <button id="btn-submit-round" class="btn btn-primary" disabled>确认审批方案</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     PAGE 4: EXTREME EVENT FEEDBACK
+     ================================================================ -->
+<section id="page-extreme" class="page">
+  <div class="card">
+    <div class="extreme-header">
+      <div class="extreme-icon">🚨</div>
+      <h1>重大安全事故警报</h1>
+    </div>
+    <div class="extreme-content">
+      <div class="alert-box">
+        <p>
+          <strong>系统通报：</strong>您在第5轮审批中选择的建设方案发生了重大安全事故。
+        </p>
+        <ul>
+          <li>工程现场发生结构性坍塌，造成人员伤亡</li>
+          <li>财政损失增加 <strong>2.3亿元</strong></li>
+          <li>城市发展指数下降 <strong>12%</strong></li>
+          <li>项目停工整改，工期延误约 <strong>8个月</strong></li>
+        </ul>
+      </div>
+      <p class="extreme-note">
+        此为模拟实验反馈，用于研究决策风险认知。请继续完成后续问卷。
+      </p>
+    </div>
+    <div class="action-area">
+      <button id="btn-after-extreme" class="btn btn-primary">继续</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     PAGE 5: POST-EXPERIMENT SURVEY
+     ================================================================ -->
+<section id="page-survey" class="page">
+  <div class="card">
+    <div class="page-header">
+      <span class="badge">后测问卷</span>
+      <h1>实验后问卷</h1>
+    </div>
+    <p class="survey-intro">请根据您在本次实验中的真实感受，对以下陈述进行评分（1=完全不同意，5=完全同意）。</p>
+
+    <div class="survey-questions">
+      <div class="survey-item">
+        <p class="question-text">1. 我信任系统（或辅助工具）的建议。</p>
+        <div class="likert-scale" data-q="q1">
+          <button class="likert-btn" data-val="1">1<br/><small>完全不同意</small></button>
+          <button class="likert-btn" data-val="2">2</button>
+          <button class="likert-btn" data-val="3">3<br/><small>中立</small></button>
+          <button class="likert-btn" data-val="4">4</button>
+          <button class="likert-btn" data-val="5">5<br/><small>完全同意</small></button>
+        </div>
+      </div>
+
+      <div class="survey-item">
+        <p class="question-text">2. 跟随系统建议进行决策更安全。</p>
+        <div class="likert-scale" data-q="q2">
+          <button class="likert-btn" data-val="1">1<br/><small>完全不同意</small></button>
+          <button class="likert-btn" data-val="2">2</button>
+          <button class="likert-btn" data-val="3">3<br/><small>中立</small></button>
+          <button class="likert-btn" data-val="4">4</button>
+          <button class="likert-btn" data-val="5">5<br/><small>完全同意</small></button>
+        </div>
+      </div>
+
+      <div class="survey-item">
+        <p class="question-text">3. 在工程审批决策方面，系统比我更专业。</p>
+        <div class="likert-scale" data-q="q3">
+          <button class="likert-btn" data-val="1">1<br/><small>完全不同意</small></button>
+          <button class="likert-btn" data-val="2">2</button>
+          <button class="likert-btn" data-val="3">3<br/><small>中立</small></button>
+          <button class="likert-btn" data-val="4">4</button>
+          <button class="likert-btn" data-val="5">5<br/><small>完全同意</small></button>
+        </div>
+      </div>
+
+      <div class="survey-item">
+        <p class="question-text">4. 若审批项目发生事故，系统应承担主要责任。</p>
+        <div class="likert-scale" data-q="q4">
+          <button class="likert-btn" data-val="1">1<br/><small>完全不同意</small></button>
+          <button class="likert-btn" data-val="2">2</button>
+          <button class="likert-btn" data-val="3">3<br/><small>中立</small></button>
+          <button class="likert-btn" data-val="4">4</button>
+          <button class="likert-btn" data-val="5">5<br/><small>完全同意</small></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-area">
+      <button id="btn-submit-survey" class="btn btn-primary" disabled>提交问卷</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     PAGE 6: EXPERIMENT END
+     ================================================================ -->
+<section id="page-end" class="page">
+  <div class="card">
+    <div class="end-content">
+      <div class="end-icon">✅</div>
+      <h1>实验结束</h1>
+      <p>感谢您完成本次实验！</p>
+      <div class="end-info">
+        <p>您的数据已成功记录，将用于本研究的学术分析。</p>
+        <p>如有任何疑问，请联系研究团队。</p>
+      </div>
+      <div class="debrief-box">
+        <h3>研究说明</h3>
+        <p>
+          本实验旨在研究AI辅助建议对工程审批决策行为的影响。
+          参与者被随机分配到"AI建议组"或"对照组"。
+          您的参与对推进人机协同决策研究具有重要价值。
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     PAGE 7: ADMIN (accessible at /admin.html – served statically)
+     ================================================================ -->
+
+<script src="app.js"></script>
+</body>
+</html>

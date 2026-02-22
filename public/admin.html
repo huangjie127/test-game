@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>管理员后台 – AI决策实验系统</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif; background:#f0f4f8; color:#1e2a3a; padding:2rem 1rem; }
+    h1 { font-size:1.5rem; margin-bottom:1.5rem; }
+    .card { background:#fff; border-radius:12px; box-shadow:0 2px 16px rgba(0,0,0,.1); padding:1.8rem; margin-bottom:1.5rem; max-width:700px; }
+    .stat-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:1rem; margin-bottom:.5rem; }
+    .stat { background:#eff6ff; border-radius:8px; padding:1rem; text-align:center; }
+    .stat-val { font-size:2rem; font-weight:700; color:#1a56db; }
+    .stat-label { font-size:.8rem; color:#64748b; margin-top:.3rem; }
+    .btn { display:inline-block; padding:.65rem 1.4rem; border:none; border-radius:8px; font-size:.95rem; font-weight:600; cursor:pointer; background:#1a56db; color:#fff; text-decoration:none; }
+    .btn:hover { background:#1341b0; }
+    table { width:100%; border-collapse:collapse; font-size:.85rem; margin-top:.8rem; }
+    th { background:#f0f4f8; padding:.5rem .7rem; text-align:left; border-bottom:2px solid #dde3ec; }
+    td { padding:.45rem .7rem; border-bottom:1px solid #dde3ec; }
+    tr:hover td { background:#f8fafc; }
+    .tag-ai { background:#dbeafe; color:#1e40af; padding:.15rem .45rem; border-radius:99px; font-size:.75rem; font-weight:600; }
+    .tag-ctrl { background:#f0fdf4; color:#166534; padding:.15rem .45rem; border-radius:99px; font-size:.75rem; font-weight:600; }
+    #error { color:#d9534f; font-size:.9rem; margin-top:.6rem; }
+  </style>
+</head>
+<body>
+  <h1>🗂️ 管理员后台 – AI决策实验系统</h1>
+
+  <div class="card">
+    <h2>实验统计</h2>
+    <div id="stats-area"><p>加载中…</p></div>
+    <p id="error"></p>
+  </div>
+
+  <div class="card">
+    <h2>数据导出</h2>
+    <p style="margin:.8rem 0;color:#64748b;font-size:.9rem;">导出所有参与者的行为数据及问卷数据（CSV格式，UTF-8编码）。</p>
+    <a class="btn" href="/api/export" download="experiment_data.csv">⬇️ 下载 CSV 数据</a>
+  </div>
+
+  <script>
+    async function loadStats() {
+      try {
+        const data = await fetch('/api/stats').then(r => r.json());
+        const byGroup = {};
+        (data.by_group || []).forEach(g => { byGroup[g.group_type] = g.count; });
+
+        document.getElementById('stats-area').innerHTML = `
+          <div class="stat-grid">
+            <div class="stat"><div class="stat-val">${data.total_participants}</div><div class="stat-label">总参与者</div></div>
+            <div class="stat"><div class="stat-val">${byGroup['AI'] || 0}</div><div class="stat-label">AI 组</div></div>
+            <div class="stat"><div class="stat-val">${byGroup['Control'] || 0}</div><div class="stat-label">对照组</div></div>
+            <div class="stat"><div class="stat-val">${data.extreme_events}</div><div class="stat-label">极端事件</div></div>
+            <div class="stat"><div class="stat-val">${data.ai_follow_rate !== null ? (data.ai_follow_rate * 100).toFixed(1) + '%' : 'N/A'}</div><div class="stat-label">AI推荐跟随率</div></div>
+          </div>
+        `;
+      } catch (e) {
+        document.getElementById('error').textContent = '加载失败：' + e.message;
+      }
+    }
+    loadStats();
+  </script>
+</body>
+</html>
