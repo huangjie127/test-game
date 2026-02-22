@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工程建设项目审批决策模拟系统</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Progress Bar -->
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar" id="progressBar"></div>
+            <span class="progress-text" id="progressText">0%</span>
+        </div>
+
+        <!-- Page 1: Informed Consent -->
+        <div class="page" id="consentPage">
+            <h1>研究参与知情同意书</h1>
+            <div class="consent-content">
+                <h2>研究项目：城市建设项目审批决策行为研究</h2>
+                <p><strong>研究目的：</strong>本研究旨在了解人们在城市建设项目审批情境中的决策行为模式。</p>
+                <p><strong>研究程序：</strong>您将完成5轮模拟的工程项目审批任务，每轮需要从4个备选方案中选择一个。整个实验预计需要8-12分钟完成。</p>
+                <p><strong>匿名性保护：</strong>本研究不收集任何个人身份信息。所有数据将以匿名方式存储和分析，仅用于学术研究目的。</p>
+                <p><strong>自愿性原则：</strong>您的参与完全自愿。您可以在任何时候退出实验，无需提供理由。</p>
+                <p><strong>数据使用：</strong>收集的匿名数据可能用于学术论文发表和学术会议展示。</p>
+                <p><strong>风险说明：</strong>本研究不涉及任何身体或心理风险。</p>
+                <div class="consent-checkbox">
+                    <input type="checkbox" id="consentCheck">
+                    <label for="consentCheck">我已阅读并理解以上内容，同意参与本研究</label>
+                </div>
+                <button class="btn primary" id="consentBtn" disabled>开始实验</button>
+            </div>
+        </div>
+
+        <!-- Page 2: Role Setting -->
+        <div class="page hidden" id="rolePage">
+            <h1>角色设定</h1>
+            <div class="role-content">
+                <div class="role-icon">🏛️</div>
+                <h2>您的角色</h2>
+                <p class="role-title">某市发改委工程审批委员会成员</p>
+                <div class="role-description">
+                    <p>作为委员会成员，您需要：</p>
+                    <ul>
+                        <li>审批城市基础设施建设项目</li>
+                        <li>在预算约束下权衡项目收益与风险</li>
+                        <li>为城市发展做出合理的审批决策</li>
+                    </ul>
+                    <p class="note">请认真对待每一个审批决策，您的选择将影响城市发展。</p>
+                </div>
+                <button class="btn primary" id="startExperimentBtn">进入审批任务</button>
+            </div>
+        </div>
+
+        <!-- Page 3: Decision Task (5 Rounds) -->
+        <div class="page hidden" id="decisionPage">
+            <div class="round-header">
+                <h1>项目审批 - 第 <span id="roundNumber">1</span> 轮</h1>
+                <div class="timer" id="timerDisplay">⏱️ 决策时间: <span id="decisionTime">0</span>秒</div>
+            </div>
+            
+            <div class="project-info">
+                <h2 id="projectName">项目名称</h2>
+                <p id="projectDescription">项目描述</p>
+            </div>
+
+            <!-- AI Recommendation (Only shown for AI group) -->
+            <div class="ai-recommendation hidden" id="aiRecommendation">
+                <div class="ai-icon">🤖</div>
+                <div class="ai-content">
+                    <span class="ai-label">智能辅助审批系统建议方案：</span>
+                    <span class="ai-suggestion" id="aiSuggestion">方案A</span>
+                    <p class="ai-note">基于历史相似项目收益—风险模型综合评估</p>
+                </div>
+            </div>
+
+            <div class="options-container" id="optionsContainer">
+                <!-- Options will be dynamically generated -->
+            </div>
+
+            <button class="btn primary" id="submitDecisionBtn" disabled>确认选择</button>
+        </div>
+
+        <!-- Page 4: Extreme Risk Feedback -->
+        <div class="page hidden" id="riskFeedbackPage">
+            <div class="feedback-container accident">
+                <div class="feedback-icon">⚠️</div>
+                <h1>重大安全事故通报</h1>
+                <div class="feedback-content">
+                    <p class="alert-text">您审批的项目发生了重大安全事故！</p>
+                    <ul class="impact-list">
+                        <li>📉 城市发展指数下降</li>
+                        <li>💰 财政损失显著增加</li>
+                        <li>⚠️ 公共安全受到影响</li>
+                    </ul>
+                    <p class="note">此反馈仅为模拟情境，用于研究目的。</p>
+                </div>
+                <button class="btn primary" id="continueAfterFeedbackBtn">继续</button>
+            </div>
+        </div>
+
+        <!-- Page 4b: No Accident Feedback -->
+        <div class="page hidden" id="noAccidentPage">
+            <div class="feedback-container success">
+                <div class="feedback-icon">✅</div>
+                <h1>项目审批完成</h1>
+                <div class="feedback-content">
+                    <p class="success-text">您已完成所有5轮项目审批任务。</p>
+                    <p>项目执行顺利，未发生重大安全事故。</p>
+                </div>
+                <button class="btn primary" id="continueToQuestionnaireBtn">进入问卷</button>
+            </div>
+        </div>
+
+        <!-- Page 5: Post-test Questionnaire -->
+        <div class="page hidden" id="questionnairePage">
+            <h1>决策体验问卷</h1>
+            <p class="questionnaire-intro">请根据您刚才的决策体验，对以下陈述进行评分（1=非常不同意，5=非常同意）：</p>
+            
+            <div class="questionnaire-container">
+                <div class="question-item">
+                    <p class="question-text">1. 我信任系统提供的建议</p>
+                    <div class="likert-scale">
+                        <span class="scale-label">非常不同意</span>
+                        <label><input type="radio" name="q1" value="1"> 1</label>
+                        <label><input type="radio" name="q1" value="2"> 2</label>
+                        <label><input type="radio" name="q1" value="3"> 3</label>
+                        <label><input type="radio" name="q1" value="4"> 4</label>
+                        <label><input type="radio" name="q1" value="5"> 5</label>
+                        <span class="scale-label">非常同意</span>
+                    </div>
+                </div>
+
+                <div class="question-item">
+                    <p class="question-text">2. 跟随系统建议会让决策更安全</p>
+                    <div class="likert-scale">
+                        <span class="scale-label">非常不同意</span>
+                        <label><input type="radio" name="q2" value="1"> 1</label>
+                        <label><input type="radio" name="q2" value="2"> 2</label>
+                        <label><input type="radio" name="q2" value="3"> 3</label>
+                        <label><input type="radio" name="q2" value="4"> 4</label>
+                        <label><input type="radio" name="q2" value="5"> 5</label>
+                        <span class="scale-label">非常同意</span>
+                    </div>
+                </div>
+
+                <div class="question-item">
+                    <p class="question-text">3. 系统比我更专业</p>
+                    <div class="likert-scale">
+                        <span class="scale-label">非常不同意</span>
+                        <label><input type="radio" name="q3" value="1"> 1</label>
+                        <label><input type="radio" name="q3" value="2"> 2</label>
+                        <label><input type="radio" name="q3" value="3"> 3</label>
+                        <label><input type="radio" name="q3" value="4"> 4</label>
+                        <label><input type="radio" name="q3" value="5"> 5</label>
+                        <span class="scale-label">非常同意</span>
+                    </div>
+                </div>
+
+                <div class="question-item">
+                    <p class="question-text">4. 若发生事故，系统应承担主要责任</p>
+                    <div class="likert-scale">
+                        <span class="scale-label">非常不同意</span>
+                        <label><input type="radio" name="q4" value="1"> 1</label>
+                        <label><input type="radio" name="q4" value="2"> 2</label>
+                        <label><input type="radio" name="q4" value="3"> 3</label>
+                        <label><input type="radio" name="q4" value="4"> 4</label>
+                        <label><input type="radio" name="q4" value="5"> 5</label>
+                        <span class="scale-label">非常同意</span>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn primary" id="submitQuestionnaireBtn" disabled>提交问卷</button>
+        </div>
+
+        <!-- Page 6: Experiment End -->
+        <div class="page hidden" id="endPage">
+            <div class="end-content">
+                <div class="end-icon">🎉</div>
+                <h1>实验完成</h1>
+                <p>感谢您参与本次研究！</p>
+                <p>您的回答已成功提交。</p>
+                <div class="participant-info">
+                    <p>参与者编号：<span id="participantIdDisplay"></span></p>
+                    <p>实验组别：<span id="groupTypeDisplay"></span></p>
+                </div>
+                <p class="note">如有任何问题，请联系研究团队。</p>
+                <p class="note">您现在可以关闭此页面。</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel (Hidden, for data export) -->
+    <div class="admin-panel hidden" id="adminPanel">
+        <h2>数据管理面板</h2>
+        <button class="btn" id="exportCsvBtn">导出CSV数据</button>
+        <button class="btn" id="closeAdminBtn">关闭面板</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
