@@ -1,0 +1,14 @@
+{
+  "name": "ai-decision-simulation",
+  "version": "1.0.0",
+  "description": "AI辅助工程建设项目审批决策模拟系统（在线实验版）",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --experimental-sqlite server.js",
+    "dev": "node --experimental-sqlite server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "uuid": "^9.0.1"
+  }
+}
